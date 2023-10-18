@@ -13,6 +13,9 @@ use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Filament\Forms\Components\TextInput;
+use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Contracts\HasTable;
+use pxlrbt\FilamentExcel\Actions\Tables\ExportBulkAction;
 
 class EmployeerResource extends Resource
 {
@@ -25,7 +28,9 @@ class EmployeerResource extends Resource
         return $form
             ->schema([
                 TextInput::make('name')
-                    ->helperText('Masukkan nama lengkap anda disini'),
+                    ->required()
+                    ->helperText('Masukkan nama lengkap anda disini')
+                    ->maxLength(255),
                 TextInput::make('company')
                     ->helperText('Masukkan nama perusahaan anda bekerja'),
                 TextInput::make('email')
@@ -37,20 +42,24 @@ class EmployeerResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('name'),
-                Tables\Columns\TextColumn::make('company'),
+                Tables\Columns\TextColumn::make('name')
+                    ->searchable(),
+                Tables\Columns\TextColumn::make('company')
+                    ->searchable(),
                 Tables\Columns\TextColumn::make('email')
+                    ->searchable()
+
             ])
             ->filters([
                 //
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),
+
             ])
             ->bulkActions([
-                Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make(),
-                ]),
+                Tables\Actions\DeleteBulkAction::make(),
+                ExportBulkAction::make()
             ])
             ->emptyStateActions([
                 Tables\Actions\CreateAction::make(),
